@@ -1,0 +1,68 @@
+version: "3"
+
+services:
+  fastapi:
+    env_file:
+      - .env
+      - private.env
+    container_name: fastapi
+    networks:
+      data-lake-network:
+    build:
+      context: fastapi/.
+      dockerfile: Dockerfile
+    volumes:
+      - ./fastapi/:/code
+    ports:
+      - 8080:8080
+    restart: always
+
+  streamlit:
+    container_name: streamlit
+    networks:
+      data-lake-network:
+    env_file:
+      - .env
+    ports:
+      - "8501:8501"
+    build:
+      context: .
+      dockerfile: streamlit/.Dockerfile
+    volumes:
+      - ./streamlit:/app/streamlit
+
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    networks:
+      data-lake-network:
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 5
+    env_file:
+      - .env
+    environment:
+      PGDATA: /var/lib/postgresql/data/db-files/
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/db-files
+  
+  dbtdocs:
+    networks:
+      data-lake-network:
+    build:
+      context: .
+      dockerfile: DbtExampleProject/.Dockerfile
+    container_name: dbtdocs
+    ports:
+      - "80:80"
+    volumes:
+      - ./DbtExampleProject/target:/target
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  data-lake-network: 

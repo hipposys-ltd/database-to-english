@@ -1,0 +1,13 @@
+fastapi[standard]>=0.112.0,<0.113.0
+boto3
+sqlalchemy
+psycopg2-binary
+langchain
+langgraph
+langchain_aws
+langchain-anthropic
+langchain_community
+python-multipart
+python-docx
+PyPDF2
+langgraph
