@@ -1,6 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from typing import Annotated
-from tr_dbt_to_english import PostgreSQLMetadataExtractor
+from server.tr_db_to_english import PostgreSQLMetadataExtractor
 from fastapi.responses import StreamingResponse
 import json
 import io
@@ -17,11 +17,13 @@ def read_root():
 
 
 @app.post("/get_node_in_english")
-async def get_node_in_english(db_uri: Annotated[str, Form()]):
+async def get_node_in_english(db_uri: Annotated[str, Form()],
+                              data_example: Annotated[bool, Form()],
+                              mask_data: Annotated[bool, Form()]):
     return StreamingResponse(PostgreSQLMetadataExtractor.extract_metadata(
         postgres_uri=db_uri,  # "postgresql://user:pass@host:port/dbname"
-        include_sample_data=True,
-        mask_sample_data=True,
+        include_sample_data=data_example,
+        mask_sample_data=mask_data,
         return_as_string=True,
         markdown=True,
         stream_results=True

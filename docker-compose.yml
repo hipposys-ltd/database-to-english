@@ -9,10 +9,10 @@ services:
     networks:
       data-lake-network:
     build:
-      context: fastapi/.
+      context: fastapi_server/.
       dockerfile: Dockerfile
     volumes:
-      - ./fastapi/:/code
+      - ./fastapi_server/:/code
     ports:
       - 8080:8080
     restart: always
